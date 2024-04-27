@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leitor de Código de Barras</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/qrcodelib.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/webcodecamjs.js"></script>
+</head>
+<body>
+    <h1>Leitor de Código de Barras</h1>
+    <video id="barcode-scanner" width="100%"></video>
+    <script>
+        let txt = "innerText" in HTMLElement.prototype ? "innerText" : "textContent";
+        let arg = {
+            resultFunction: function(result) {
+                document.getElementById('barcode-scanner').srcObject.getTracks().forEach(track => {
+                    track.stop();
+                });
+                document.getElementById('barcode-scanner').hidden = true;
+                document.getElementById('result').style.display = "block";
+                document.getElementById('barcode-result').textContent = result.code;
+            }
+        };
+        let decoder = new WebCodeCamJS("#barcode-scanner").buildSelectMenu("select", "environment|back").init(arg).play();
+    </script>
+    <div id="result" style="display: none;">
+        <h2>Resultado:</h2>
+        <p id="barcode-result"></p>
+    </div>
+</body>
+</html>

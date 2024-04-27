@@ -5,20 +5,32 @@
     <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/qrcodelib.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/webcodecamjs.js"></script>
+    <style>
+        #barcode-scanner {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        #guides {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
     <h1>Leitor de Código de Barras</h1>
     <button onclick="startScanner()" id="start-button">Iniciar</button>
-    <video id="barcode-scanner" width="100%"></video>
+    <video id="barcode-scanner"></video>
+    <div id="guides">Posicione o código de barras dentro da área</div>
     <script>
         let txt = "innerText" in HTMLElement.prototype ? "innerText" : "textContent";
         let arg = {
             resultFunction: function(result) {
-                document.getElementById('barcode-scanner').srcObject.getTracks().forEach(track => {
-                    track.stop();
-                });
-                document.getElementById('start-button').style.display = "block";
-                document.getElementById('result').style.display = "block";
                 document.getElementById('barcode-result').textContent = result.code;
             }
         };
@@ -29,6 +41,7 @@
                 video.srcObject = stream;
                 video.play();
                 document.getElementById('start-button').style.display = "none";
+                document.getElementById('guides').style.display = "none";
             })
             .catch(function(error) {
                 console.log("Erro ao acessar a câmera: " + error);

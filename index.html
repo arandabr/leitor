@@ -32,6 +32,9 @@
         let arg = {
             resultFunction: function(result) {
                 document.getElementById('barcode-result').textContent = result.code;
+                // Emitir um som de bipe aqui
+                var audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+                audio.play();
             }
         };
         function startScanner() {

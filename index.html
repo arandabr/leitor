@@ -46,7 +46,20 @@
             .catch(function(error) {
                 console.log("Erro ao acessar a câmera: " + error);
             });
-            new WebCodeCamJS("#barcode-scanner").buildSelectMenu("select", "environment|back").init(arg).play();
+            let decoder = new WebCodeCamJS("#barcode-scanner").buildSelectMenu("select", "environment|back").init(arg).play();
+            decoder.options.zoom = 1;
+            decoder.options.contrast = 100;
+            decoder.options.brightness = 0;
+            decoder.options.hue = 0;
+            decoder.options.saturation = 0;
+            decoder.options.sharpness = 0;
+            decoder.options.inputStream.constraints = {
+                video: {
+                    width: { ideal: 4096 },
+                    height: { ideal: 2160 },
+                    facingMode: "environment"
+                }
+            };
         }
     </script>
     <div id="result" style="display: none;">

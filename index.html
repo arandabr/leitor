@@ -1,43 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Leitor de Código de Barras</title>
-    <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/qrcodelib.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/webcodecamjs.js"></script>
-    <style>
-        #barcode-scanner {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            position: relative;
-        }
-        #guides {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            text-align: center;
-            font-weight: bold;
-            font-size: 20px;
-            color: #333;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            border: 2px solid #f00; /* Cor vermelha */
-            pointer-events: none; /* Permitir que cliques passem através do overlay */
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leitor de Código de Barras</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+.container {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+}
+#barcode-scanner {
+    width: 100%;
+    max-width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+}
+#guides {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    margin-top: 10px;
+}
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 2px solid #f00; /* Cor vermelha */
+    pointer-events: none; /* Permitir que cliques passem através do overlay */
+    display: none; /* Ocultar o overlay inicialmente */
+}
+</style>
 </head>
 <body>
+<div class="container">
     <h1>Leitor de Código de Barras</h1>
     <button onclick="startScanner()" id="start-button">Iniciar</button>
     <div id="barcode-scanner">
@@ -45,48 +64,51 @@
         <div id="overlay"></div>
         <div id="guides">Posicione o código de barras dentro da área</div>
     </div>
-    <script>
-        let txt = "innerText" in HTMLElement.prototype ? "innerText" : "textContent";
-        let arg = {
-            resultFunction: function(result) {
-                document.getElementById('barcode-result').textContent = result.code;
-                // Emitir um som de bipe aqui
-                var audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
-                audio.play();
-            }
-        };
-        function startScanner() {
-            let video = document.getElementById('barcode-video');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(function(stream) {
-                video.srcObject = stream;
-                video.play();
-                document.getElementById('start-button').style.display = "none";
-                document.getElementById('guides').style.display = "none";
-                document.getElementById('overlay').style.display = "block";
-            })
-            .catch(function(error) {
-                console.log("Erro ao acessar a câmera: " + error);
-            });
-            let decoder = new WebCodeCamJS("#barcode-video").buildSelectMenu("select", "environment|back").init(arg).play();
-            decoder.options.zoom = 1;
-            decoder.options.contrast = 100;
-            decoder.options.brightness = 0;
-            decoder.options.hue = 0;
-            decoder.options.saturation = 0;
-            decoder.options.sharpness = 0;
-            decoder.options.inputStream.constraints = {
-                video: {
-                    width: { ideal: 4096 },
-                    height: { ideal: 2160 },
-                    facingMode: "environment"
-                }
-            };
-        }
-    </script>
     <div id="result" style="display: none;">
         <h2>Resultado:</h2>
         <p id="barcode-result"></p>
     </div>
+</div>
+<script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/qrcodelib.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/andrastoth/webcodecamjs/js/webcodecamjs.js"></script>
+<script>
+let txt = "innerText" in HTMLElement.prototype ? "innerText" : "textContent";
+let arg = {
+    resultFunction: function(result) {
+        document.getElementById('barcode-result').textContent = result.code;
+        // Emitir um som de bipe aqui
+        var audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+        audio.play();
+    }
+};
+function startScanner() {
+    let video = document.getElementById('barcode-video');
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    .then(function(stream) {
+        video.srcObject = stream;
+        video.play();
+        document.getElementById('start-button').style.display = "none";
+        document.getElementById('guides').style.display = "none";
+        document.getElementById('overlay').style.display = "block";
+    })
+    .catch(function(error) {
+        console.log("Erro ao acessar a câmera: " + error);
+    });
+    let decoder = new WebCodeCamJS("#barcode-video").buildSelectMenu("select", "environment|back").init(arg).play();
+    decoder.options.zoom = 1;
+    decoder.options.contrast = 100;
+    decoder.options.brightness = 0;
+    decoder.options.hue = 0;
+    decoder.options.saturation = 0;
+    decoder.options.sharpness = 0;
+    decoder.options.inputStream.constraints = {
+        video: {
+            width: { ideal: 4096 },
+            height: { ideal: 2160 },
+            facingMode: "environment"
+        }
+    };
+}
+</script>
 </body>
 </html>

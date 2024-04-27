@@ -8,8 +8,8 @@
 </head>
 <body>
     <h1>Leitor de Código de Barras</h1>
-    <button onclick="startScanner()">Iniciar</button>
-    <video id="barcode-scanner" width="100%" style="display: none;"></video>
+    <button onclick="startScanner()" id="start-button">Iniciar</button>
+    <video id="barcode-scanner" width="100%"></video>
     <script>
         let txt = "innerText" in HTMLElement.prototype ? "innerText" : "textContent";
         let arg = {
@@ -17,14 +17,23 @@
                 document.getElementById('barcode-scanner').srcObject.getTracks().forEach(track => {
                     track.stop();
                 });
-                document.getElementById('barcode-scanner').hidden = true;
+                document.getElementById('start-button').style.display = "block";
                 document.getElementById('result').style.display = "block";
                 document.getElementById('barcode-result').textContent = result.code;
             }
         };
         function startScanner() {
-            document.getElementById('barcode-scanner').style.display = "block";
-            let decoder = new WebCodeCamJS("#barcode-scanner").buildSelectMenu("select", "environment|back").init(arg).play();
+            let video = document.getElementById('barcode-scanner');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+                document.getElementById('start-button').style.display = "none";
+            })
+            .catch(function(error) {
+                console.log("Erro ao acessar a câmera: " + error);
+            });
+            new WebCodeCamJS("#barcode-scanner").buildSelectMenu("select", "environment|back").init(arg).play();
         }
     </script>
     <div id="result" style="display: none;">

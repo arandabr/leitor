@@ -10,6 +10,7 @@
             width: 100%;
             max-width: 400px;
             margin: 0 auto;
+            position: relative;
         }
         #guides {
             width: 100%;
@@ -19,14 +20,31 @@
             font-weight: bold;
             font-size: 20px;
             color: #333;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border: 2px solid #f00; /* Cor vermelha */
+            pointer-events: none; /* Permitir que cliques passem através do overlay */
         }
     </style>
 </head>
 <body>
     <h1>Leitor de Código de Barras</h1>
     <button onclick="startScanner()" id="start-button">Iniciar</button>
-    <video id="barcode-scanner"></video>
-    <div id="guides">Posicione o código de barras dentro da área</div>
+    <div id="barcode-scanner">
+        <video id="barcode-video"></video>
+        <div id="overlay"></div>
+        <div id="guides">Posicione o código de barras dentro da área</div>
+    </div>
     <script>
         let txt = "innerText" in HTMLElement.prototype ? "innerText" : "textContent";
         let arg = {
@@ -38,18 +56,19 @@
             }
         };
         function startScanner() {
-            let video = document.getElementById('barcode-scanner');
+            let video = document.getElementById('barcode-video');
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(function(stream) {
                 video.srcObject = stream;
                 video.play();
                 document.getElementById('start-button').style.display = "none";
                 document.getElementById('guides').style.display = "none";
+                document.getElementById('overlay').style.display = "block";
             })
             .catch(function(error) {
                 console.log("Erro ao acessar a câmera: " + error);
             });
-            let decoder = new WebCodeCamJS("#barcode-scanner").buildSelectMenu("select", "environment|back").init(arg).play();
+            let decoder = new WebCodeCamJS("#barcode-video").buildSelectMenu("select", "environment|back").init(arg).play();
             decoder.options.zoom = 1;
             decoder.options.contrast = 100;
             decoder.options.brightness = 0;

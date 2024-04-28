@@ -1,74 +1,50 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uber via WhatsApp</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-  <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
-  <style>
-    body {
-      padding-top: 50px;
-    }
-    .card-panel {
-      padding: 20px;
-    }
-    .map-container {
-      height: 300px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
 <body>
-  <nav>
-    <div class="nav-wrapper">
-      <a href="#" class="brand-logo center">Uber via WhatsApp</a>
-    </div>
-  </nav>
-
-  <div class="container">
-    <div class="row">
-      <div class="col s12 m6 offset-m3">
-        <div class="card-panel">
-          <h4>Peça sua corrida</h4>
-          <form>
-            <div class="input-field">
-              <input type="text" id="origem" class="autocomplete" autocomplete="off" required>
-              <label for="origem">Origem</label>
+    <div class="container">
+        <h3 class="center-align">Barcode Scanner</h3>
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Resultado:</span>
+                        <p id="barcode-result"></p>
+                    </div>
+                </div>
             </div>
-            <div class="input-field">
-              <input type="text" id="destino" class="autocomplete" autocomplete="off" required>
-              <label for="destino">Destino</label>
-            </div>
-            <div id="map" class="map-container"></div>
-            <button class="btn waves-effect waves-light" type="submit">Pedir Corrida</button>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
+    <script src="https://unpkg.com/@zxing/library@0.24.0/umd/index.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const barcodeResult = document.getElementById('barcode-result');
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
-  <script>
-    mapboxgl.accessToken = '';
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(function (stream) {
+                    const barcodeReader = new ZXing.BrowserBarcodeReader();
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const origemInput = document.getElementById('origem');
-      const destinoInput = document.getElementById('destino');
+                    barcodeReader.decodeFromStream(stream, function (result, error) {
+                        if (result) {
+                            barcodeResult.innerHTML = result.text;
+                        } else {
+                            barcodeResult.innerHTML = 'Erro ao ler código de barras.';
+                        }
 
-      const geocoder = new MapboxGeocoder({
-        accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl,
-        countries: 'BR',
-        types: 'address',
-        marker: false
-      });
-
-      origemInput.parentNode.insertBefore(geocoder.onAdd(map), origemInput.nextSibling);
-      destinoInput.parentNode.insertBefore(geocoder.onAdd(map), destinoInput.nextSibling);
-
-      M.AutoInit(); // Inicializa os campos de entrada do Materialize
-    });
-  </script>
+                        stream.getTracks().forEach(track => track.stop());
+                    });
+                })
+                .catch(function (error) {
+                    barcodeResult.innerHTML = 'Erro ao acessar a câmera.';
+                    console.error('Erro ao acessar a câmera:', error);
+                });
+        });
+    </script>
 </body>
 </html>

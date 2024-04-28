@@ -26,7 +26,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const barcodeResult = document.getElementById('barcode-result');
 
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            navigator.mediaDevices.getUserMedia({ video: true })
                 .then(function (stream) {
                     const barcodeReader = new ZXing.BrowserBarcodeReader();
 
@@ -41,7 +41,7 @@
                     });
                 })
                 .catch(function (error) {
-                    barcodeResult.innerHTML = 'Erro ao acessar a câmera.';
+                    barcodeResult.innerHTML = 'Erro ao acessar a câmera. Verifique se o acesso à câmera está permitido e se você está usando uma conexão segura (HTTPS).';
                     console.error('Erro ao acessar a câmera:', error);
                 });
         });

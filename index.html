@@ -12,6 +12,9 @@
             max-width: 640px; /* Defina o tamanho máximo do vídeo conforme necessário */
             margin: 0 auto; /* Centralize o vídeo na página */
         }
+        #barcode-result {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -26,32 +29,40 @@
                 <div class="card">
                     <div class="card-content">
                         <span class="card-title">Resultado:</span>
+                        <video id="barcode-video"></video>
                         <p id="barcode-result" class="flow-text"></p>
+                        <button id="start-scan" class="btn">Ler Código</button>
                     </div>
                 </div>
             </div>
         </div>
-        <video id="barcode-video"></video>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://rawgit.com/EddieLa/BarcodeReader/master/dist/barcode-reader.min.js"></script>
     <script>
         const videoElement = document.getElementById('barcode-video');
         const barcodeResult = document.getElementById('barcode-result');
+        const startScanButton = document.getElementById('start-scan');
+        let cameraStarted = false;
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(function (stream) {
-                videoElement.srcObject = stream;
-                videoElement.play();
+        startScanButton.addEventListener('click', function() {
+            if (!cameraStarted) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                    .then(function (stream) {
+                        videoElement.srcObject = stream;
+                        videoElement.play();
 
-                const barcodeReader = new BarcodeReader();
-                barcodeReader.decodeFromInputVideoDevice(stream, 'barcode-video', (result) => {
-                    barcodeResult.textContent = result.text;
-                });
-            })
-            .catch(function (error) {
-                console.error('Erro ao acessar a câmera:', error);
-            });
+                        const barcodeReader = new BarcodeReader();
+                        barcodeReader.decodeFromInputVideoDevice(stream, 'barcode-video', (result) => {
+                            barcodeResult.textContent = result.text;
+                        });
+                        cameraStarted = true;
+                    })
+                    .catch(function (error) {
+                        console.error('Erro ao acessar a câmera:', error);
+                    });
+            }
+        });
     </script>
 </body>
 </html>
